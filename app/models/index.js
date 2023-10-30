@@ -18,4 +18,20 @@ db.rooms = require('./room.model.js')(sequelize, Sequelize);
 db.booking = require('./booking.model.js')(sequelize, Sequelize);
 db.user = require('./user.model.js')(sequelize, Sequelize);
 db.roles = require('./role.model.js')(sequelize, Sequelize);
+
+
+// Relationship
+db.roles.belongsTo(db.user);
+db.user.belongsTo(db.roles);
+db.rooms.belongsTo(db.user);
+db.booking.belongsTo(db.user);
+db.booking.belongsTo(db.rooms);
+
+
+db.user.hasMany(db.rooms);
+db.user.hasMany(db.booking);
+db.rooms.hasMany(db.booking);
+db.roles.hasMany(db.user);
+
 module.exports = db;
+

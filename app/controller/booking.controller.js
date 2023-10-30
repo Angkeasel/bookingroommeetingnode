@@ -13,9 +13,11 @@ exports.create = (req, res) => {
     }
     const booked = {
         title: req.body.title,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        description: req.body.description
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        description: req.body.description,
+        userId: req.userId,
+        roomId: req.body.roomId
     }
     Booking.create(booked).then(data => {
         res.send(data);
@@ -26,9 +28,16 @@ exports.create = (req, res) => {
 
 // 2 get all booking meeting
 exports.findAll = (req, res) => {
-    const title = req.body.title;
-    var condition = title ? { title: { [Op.iLike]: `%${title}` } } : null
-    Booking.findAll({ where: condition }).then(data => {
+    const uid = req.userId;
+    var condition = uid ? { userId: uid } : null
+    // const title = req.body.title;
+    // var condition = title ? { title: { [Op.iLike]: `%${title}` } } : null
+    Booking.findAll({
+        where: condition,
+        attributes: [
+            "id", "title", "description",
+        ]
+    }).then(data => {
         res.send(data);
     }).catch(err => {
         res.status(500).send({
@@ -87,3 +96,17 @@ exports.delete = (req, res) => {
     });
 
 };
+// 5 get booking details by id
+exports.getBookingDetail = (req, res) => {
+    const id = req.params.id;
+    Booking.findByPk(id).then(result => {
+        res.status(200).send({
+            detail: result
+        });
+    }).catch(err => {
+        res.status(404).send({
+            message: err.message || 'booking Not Found'
+        });
+    });
+};
+

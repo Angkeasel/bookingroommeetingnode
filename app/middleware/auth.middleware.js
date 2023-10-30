@@ -1,5 +1,7 @@
 const configs = require('../configs/auth.configs')
 const jwt = require('jsonwebtoken');
+const db = require('../models');
+const User = db.user;
 
 // verifyJWT Function 
 const verifyToken = (req, res, next) => {
@@ -30,6 +32,45 @@ const verifyToken = (req, res, next) => {
     // }
     // return next();
 };
+const isAdmin = (req, res, next) => {
+    User.findByPk(req.userId).then(user => {
+        Role.findByPk(user.roleId).then(role => {
 
-module.exports = verifyToken;
+            if (role.name === "admin") {
+                next();
+                return;
+            }
+
+            res.status(403).send({
+                message: "Require Admin Role!"
+            });
+            return;
+        });
+    });
+};
+// isAdmin = async (req, res, next) => {
+//     try {
+//         const user = await User.findByPk(req.userId);
+//         const roles = await user.getRoles();
+
+//         for (let i = 0; i < roles.lenght; i++) {
+//             if (roles[i].name === 'admin') {
+//                 return next();
+//             }
+//         }
+//         return res.status(403).send({
+//             message: "Require Admin Role!",
+//         });
+//     } catch (err) {
+//         return res.status(500).send({
+//             status: 'Fail',
+//             message: 'Unable to validate User role!'
+//         })
+//     }
+// }
+const authJwt = {
+    verifyToken: verifyToken,
+    isAdmin: isAdmin
+}
+module.exports = authJwt;
 //....................

@@ -11,7 +11,8 @@ exports.create = (req, res) => {
     }
     // create room
     const room = {
-        name: req.body.name
+        name: req.body.name,
+        userId: req.userId
     };
     // save room in database
     Room.create(room).then(data => {

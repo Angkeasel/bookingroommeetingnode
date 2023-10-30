@@ -1,5 +1,5 @@
-const { verifySignUp } = require('../middleware');
-const auth = require('../middleware/auth.middleware.js');
+const { verifySignUp, authJwt } = require('../middleware');
+//const auth = require('../middleware/auth.middleware.js');
 const user = require('../controller/user.controller.js');
 var router = require("express").Router();
 module.exports = function (app) {
@@ -13,10 +13,10 @@ module.exports = function (app) {
 
     // user route
     router.post('/signup',
-        [verifySignUp.checkDuplicateEmail],
-        user.signup);
-    router.post('/login', auth, user.signin);
-    router.get('/', user.findAll);
+        [verifySignUp.checkDuplicateEmail], user.signup);
+    router.post('/login', user.signin);
+    router.get('/', user.findAllUser);
+    router.get("/roles", user.findAllRoles);
 
 
     app.use('/api/user', router);
